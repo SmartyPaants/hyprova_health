@@ -12,7 +12,6 @@ class HRBApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'HRB App',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Inter', // simple + modern like Bearable
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
