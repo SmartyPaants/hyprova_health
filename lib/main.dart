@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'onboarding/onboarding_reason_screen.dart';
+import 'package:provider/provider.dart';
+import 'state/onboarding/onboarding_state.dart';
 
 void main() {
-  runApp(const HRBApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => OnboardingState(),
+      child: HRBApp(),
+    ),
+  );
 }
 
 class HRBApp extends StatelessWidget {

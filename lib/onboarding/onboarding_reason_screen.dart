@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'onboarding_goals_screen.dart';
+import 'package:provider/provider.dart';
+import '../state/onboarding/onboarding_state.dart';
 
 class OnboardingReasonScreen extends StatefulWidget {
   const OnboardingReasonScreen({super.key});
@@ -175,9 +177,14 @@ class _OnboardingReasonScreenState extends State<OnboardingReasonScreen> {
                   onPressed: selectedReasons.isEmpty 
                     ? null 
                     : () {
+                      final selectedHeadings = selectedReasons.map((index) {
+                        return reasons[index]["title"];
+                      }).toList();
+                      Provider.of<OnboardingState>(context, listen: false)
+                        .setSelectedReasons(selectedHeadings);
                       Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => OnboardingGoalsScreen()),
+                      MaterialPageRoute(builder: (context) => const OnboardingGoalsScreen()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
