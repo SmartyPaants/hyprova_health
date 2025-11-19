@@ -30,7 +30,7 @@ class _OnboardingReasonScreenState extends State<OnboardingReasonScreen> {
           "Better manage a chronic condition or health issue",
     },
     {
-      "icon": Icons.scale_outlined,
+      "icon": Icons.monitor_weight_rounded,
       "title": "Lose weight",
       "subtitle":
           "Support my weight loss journey in a healthier way",

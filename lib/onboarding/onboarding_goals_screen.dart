@@ -45,7 +45,17 @@ class _OnboardingGoalsScreenState extends State<OnboardingGoalsScreen> {
             Row(
               children: [
                 IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => {
+                    Provider.of<OnboardingState>(context, listen: false)
+                            .setGoals({
+                          "steps": steps,
+                          "water": water,
+                          "exercise": exercise,
+                          "sleep": sleep,
+                          "weight": weight,
+                      }),
+                    Navigator.pop(context)
+                    },
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                 ),
                 Expanded(
@@ -101,11 +111,10 @@ class _OnboardingGoalsScreenState extends State<OnboardingGoalsScreen> {
                     icon: Icons.directions_walk,
                     title: "Daily Step Goal",
                     value: steps,
-                    unit: "steps",
-                    onPlus: () => setState(() => steps += 100),
-                    onMinus: () => setState(() {
-                      steps = (steps - 100).clamp(1000, 50000);
-                    }),
+                    unit: "",
+                    onPlus: () => setState(() => steps += 500),
+                    onMinus: () => setState(() => steps = (steps - 500).clamp(1000, 50000)),
+                    onChanged: (v) => setState(() => steps = v.clamp(1000, 50000)),
                   ),
                   _goalCard(
                     icon: Icons.water_drop_outlined,
@@ -113,9 +122,8 @@ class _OnboardingGoalsScreenState extends State<OnboardingGoalsScreen> {
                     value: water,
                     unit: "cups",
                     onPlus: () => setState(() => water++),
-                    onMinus: () => setState(() {
-                      water = (water - 1).clamp(1, 30);
-                    }),
+                    onMinus: () => setState(() => water = (water - 1).clamp(1, 30)),
+                    onChanged: (v) => setState(() => water = v.clamp(1, 30)),
                   ),
                   _goalCard(
                     icon: Icons.fitness_center_outlined,
@@ -123,9 +131,8 @@ class _OnboardingGoalsScreenState extends State<OnboardingGoalsScreen> {
                     value: exercise,
                     unit: "min",
                     onPlus: () => setState(() => exercise += 5),
-                    onMinus: () => setState(() {
-                      exercise = (exercise - 5).clamp(5, 300);
-                    }),
+                    onMinus: () => setState(() => exercise = (exercise - 5).clamp(5, 300)),
+                    onChanged: (v) => setState(() => exercise = v.clamp(5, 300)),
                   ),
                   _goalCard(
                     icon: Icons.nights_stay_outlined,
@@ -136,9 +143,10 @@ class _OnboardingGoalsScreenState extends State<OnboardingGoalsScreen> {
                     onMinus: () => setState(() {
                       sleep = (sleep-1).clamp(4, 15);
                     }),
+                    onChanged: (v) => setState(() => sleep = v.clamp(4, 15)),
                   ),
                   _goalCard(
-                    icon: Icons.monitor_weight_outlined,
+                    icon: Icons.monitor_weight_rounded,
                     title: "Weight Target",
                     value: weight,
                     unit: "kg",
@@ -146,6 +154,7 @@ class _OnboardingGoalsScreenState extends State<OnboardingGoalsScreen> {
                     onMinus: () => setState(() {
                       weight = (weight-1).clamp(30, 300);
                     }),
+                    onChanged: (v) => setState(() => weight = v.clamp(30, 300)),
                   ),
 
                   // Continue Button
@@ -213,64 +222,100 @@ class _OnboardingGoalsScreenState extends State<OnboardingGoalsScreen> {
   }
   
   Widget _goalCard({
-    required IconData icon,
-    required String title,
-    required int value,
-    required String unit,
-    required VoidCallback onPlus,
-    required VoidCallback onMinus,
-  }) {
-    return Card(
-      color: const Color(0xFF1E1E1E),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+  required IconData icon,
+  required String title,
+  required int value,
+  required String unit,
+  required VoidCallback onPlus,
+  required VoidCallback onMinus,
+  required Function(int) onChanged,
+}) {
+  final controller = TextEditingController(text: value.toString());
+
+  return Container(
+    margin: const EdgeInsets.only(bottom: 14),
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: Colors.white.withValues(alpha: 0.04),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(
+        color: Colors.white.withValues(alpha: 0.08),
+        width: 1.3,
       ),
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.pink[200], size: 40),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "$value $unit",
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: onMinus,
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.white),
-                ),
-                IconButton(
-                  onPressed: onPlus,
-                  icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-                ),
-              ],
-            ),
-          ],
+    ),
+    child: Row(
+      children: [
+        // Icon circle
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.06),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.pink[200], size: 22),
         ),
-      ),
-    );
-  }
+
+        const SizedBox(width: 16),
+
+        // Title
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+
+        // Minus button
+        IconButton(
+          onPressed: onMinus,
+          icon: const Icon(Icons.remove, color: Colors.white70),
+        ),
+
+        // Text field for typing numbers
+        SizedBox(
+          width: 55,
+          child: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            onSubmitted: (val) {
+              if (val.isNotEmpty && int.tryParse(val) != null) {
+                onChanged(int.parse(val));
+              } else {
+                controller.text = value.toString(); // reset invalid input
+              }
+            },
+          ),
+        ),
+
+        // Unit text
+        Text(
+          unit,
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+
+        // Plus button
+        IconButton(
+          onPressed: onPlus,
+          icon: const Icon(Icons.add, color: Colors.white70),
+        ),
+      ],
+    ),
+  );
+}
 }
   
